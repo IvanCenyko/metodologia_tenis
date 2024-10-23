@@ -17,11 +17,48 @@ for archivo in os.listdir(carpeta_csv):
         dataframes[archivo.replace(".csv", '')] = df
 
 
-frame = dataframes["atp_matches_2004"]
-winner = frame[(frame['winner_name'].str.contains("Novak Djokovic"))]
-loser = frame[(frame['loser_name'].str.contains("Novak Djokovic"))]
+
+yearly_matches_djokovic = {}
+
+years = range(2004, 2023)
+
+num_partidos_djokovic = 0
 
 
-total = pd.concat([winner, loser], ignore_index=True, sort=False)
+for year in years:
 
-print(total)
+    frame = dataframes[f"atp_matches_{str(year)}"]
+    winner = frame[(frame['winner_name'].str.contains("Novak Djokovic"))]
+    loser = frame[(frame['loser_name'].str.contains("Novak Djokovic"))]
+
+
+    total = pd.concat([winner, loser], ignore_index=True, sort=False)
+
+    yearly_matches_djokovic[str(year)] = total
+
+    num_partidos_djokovic += len(total.index)
+
+
+
+
+yearly_matches_nadal = {}
+
+years = range(2004, 2023)
+
+num_partidos_nadal = 0
+
+
+for year in years:
+
+    frame = dataframes[f"atp_matches_{str(year)}"]
+    winner = frame[(frame['winner_name'].str.contains("Rafael Nadal"))]
+    loser = frame[(frame['loser_name'].str.contains("Rafael Nadal"))]
+
+
+    total = pd.concat([winner, loser], ignore_index=True, sort=False)
+
+    yearly_matches_nadal[str(year)] = total
+
+    num_partidos_nadal += len(total.index)
+
+print(num_partidos_nadal)
