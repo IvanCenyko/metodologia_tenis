@@ -18,16 +18,19 @@ for archivo in os.listdir(carpeta_csv):
 
 
 # tomo columnas de algun dataframe (todos son iguales en formato)
-columnas = list(dataframes_archivos["atp_matches_2004"])
+columnas = list(dataframes_archivos["atp_matches_2023"])
 
 # dataframe vacio con partidos nadal
-partidos_nadal = pd.DataFrame(columns=columnas)
+partidos_nadal_ganados = pd.DataFrame(columns=columnas)
+partidos_nadal_perdidos = pd.DataFrame(columns=columnas)
+
 # dataframe vacio con partidos djokovic
-partidos_djokovic = pd.DataFrame(columns=columnas)
+partidos_djokovic_ganados = pd.DataFrame(columns=columnas)
+partidos_djokovic_perdidos = pd.DataFrame(columns=columnas)
 
 
 # rango de agnos a revisar
-years = range(2004, 2023)
+years = [2023, 2024]
 
 # datos de Djokovic
 
@@ -41,17 +44,13 @@ for year in years:
     # tomo partidos que perdio
     loser = frame[(frame['loser_name'].str.contains("Novak Djokovic"))]
 
-    # concateno ambos
-    total = pd.concat([winner, loser], ignore_index=True, sort=False)
 
     # contateno en dataframe de todos los partidos, los que lei de este agno
-    partidos_djokovic = pd.concat([total, partidos_djokovic], ignore_index=True, sort=False)
+    partidos_djokovic_ganados = pd.concat([partidos_djokovic_ganados, winner], ignore_index=True, sort=False)
+    partidos_djokovic_perdidos = pd.concat([partidos_djokovic_perdidos, loser], ignore_index=True, sort=False)
 
 
 # idem para Nadal
-
-years = range(2004, 2023)
-
 
 for year in years:
 
@@ -63,9 +62,13 @@ for year in years:
     total = pd.concat([winner, loser], ignore_index=True, sort=False)
 
 
-    partidos_nadal = pd.concat([total, partidos_nadal], ignore_index=True, sort=False)
+    partidos_nadal_ganados = pd.concat([partidos_nadal_ganados, winner], ignore_index=True, sort=False)
+    partidos_nadal_perdidos = pd.concat([partidos_nadal_perdidos, loser], ignore_index=True, sort=False)
 
 
 
-partidos_djokovic.to_csv("./datos_training/djokovic_training.csv", index=False)
-partidos_nadal.to_csv("./datos_training/nadal_training.csv", index=False)
+partidos_djokovic_ganados.to_csv("./datos_testing/djokovic_ganados_testing.csv", index=False)
+partidos_djokovic_perdidos.to_csv("./datos_testing/djokovic_perdidos_testing.csv", index=False)
+
+partidos_nadal_ganados.to_csv("./datos_testing/nadal_ganados_testing.csv", index=False)
+partidos_nadal_perdidos.to_csv("./datos_testing/nadal_perdidos_testing.csv", index=False)
