@@ -4,7 +4,7 @@ import os
 # Especifica la ruta de la carpeta donde están los CSV
 carpeta_csv = r'tennis_atp-master'
 
-# Lista para almacenar todos los DataFrames
+# Diccionario para almacenar todos los DataFrames
 dataframes = {}
 
 # Recorre todos los archivos de la carpeta
