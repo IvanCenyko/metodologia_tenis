@@ -17,8 +17,11 @@ for archivo in os.listdir(carpeta_csv):
         dataframes[archivo.replace(".csv", '')] = df
 
 
-
-'''
 frame = dataframes["atp_matches_2004"]
-frame["winner_name"].str.contains("Novak Djokovic")
-'''
+winner = frame[(frame['winner_name'].str.contains("Novak Djokovic"))]
+loser = frame[(frame['loser_name'].str.contains("Novak Djokovic"))]
+
+
+total = pd.concat([winner, loser], ignore_index=True, sort=False)
+
+print(total)
