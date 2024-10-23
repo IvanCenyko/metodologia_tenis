@@ -29,8 +29,11 @@ partidos_djokovic_ganados = pd.DataFrame(columns=columnas)
 partidos_djokovic_perdidos = pd.DataFrame(columns=columnas)
 
 
+
+
 # rango de agnos a revisar
 years = [2023, 2024]
+
 
 # datos de Djokovic
 
@@ -39,10 +42,11 @@ for year in years:
 
     # tomo el dataframe de ese agno
     frame = dataframes_archivos[f"atp_matches_{str(year)}"]
-    # tomo partidos que gano
-    winner = frame[(frame['winner_name'].str.contains("Novak Djokovic"))]
-    # tomo partidos que perdio
-    loser = frame[(frame['loser_name'].str.contains("Novak Djokovic"))]
+
+    # tomo partidos que gano djokovic contra cualquiera menos djokovic (eso se reserva para testing)
+    winner = frame[(frame['winner_name'].str.contains("Novak Djokovic")) & ~frame["loser_name"].str.contains("Rafael Nadal")]
+    # tomo partidos que perdio djokovic contra cualquiera menos nadal (eso se reserva para testing)
+    loser = frame[(frame['loser_name'].str.contains("Novak Djokovic")) & ~frame["winner_name"].str.contains("Rafael Nadal")]
 
 
     # contateno en dataframe de todos los partidos, los que lei de este agno
@@ -55,11 +59,9 @@ for year in years:
 for year in years:
 
     frame = dataframes_archivos[f"atp_matches_{str(year)}"]
-    winner = frame[(frame['winner_name'].str.contains("Rafael Nadal"))]
-    loser = frame[(frame['loser_name'].str.contains("Rafael Nadal"))]
 
-
-    total = pd.concat([winner, loser], ignore_index=True, sort=False)
+    winner = frame[(frame['winner_name'].str.contains("Rafael Nadal")) & ~frame["loser_name"].str.contains("Novak Djokovic")]
+    loser = frame[(frame['loser_name'].str.contains("Rafael Nadal")) & ~frame["winner_name"].str.contains("Novak Djokovic")]
 
 
     partidos_nadal_ganados = pd.concat([partidos_nadal_ganados, winner], ignore_index=True, sort=False)
@@ -67,6 +69,7 @@ for year in years:
 
 
 
+# exporto a csv
 partidos_djokovic_ganados.to_csv("./datos_testing/djokovic_ganados_testing.csv", index=False)
 partidos_djokovic_perdidos.to_csv("./datos_testing/djokovic_perdidos_testing.csv", index=False)
 
