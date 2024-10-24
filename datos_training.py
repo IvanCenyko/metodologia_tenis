@@ -1,3 +1,5 @@
+# este archivo se corre una única vez para generar los archivos .csv en "datos_training/"
+
 import pandas as pd
 import os
 
