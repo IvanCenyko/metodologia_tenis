@@ -30,9 +30,12 @@ partidos_nadal_perdidos = pd.DataFrame(columns=columnas)
 partidos_djokovic_ganados = pd.DataFrame(columns=columnas)
 partidos_djokovic_perdidos = pd.DataFrame(columns=columnas)
 
+djokovic_nadal = pd.DataFrame(columns=columnas)
+
+
 
 # rango de agnos a revisar
-years = range(2004, 2023)
+years = range(2004, 2025)
 
 # datos de Djokovic
 
@@ -62,14 +65,53 @@ for year in years:
     winner = frame[(frame['winner_name'].str.contains("Rafael Nadal")) & ~frame["loser_name"].str.contains("Novak Djokovic")]
     loser = frame[(frame['loser_name'].str.contains("Rafael Nadal")) & ~frame["winner_name"].str.contains("Novak Djokovic")]
 
+    # busco partidos que hayan jugado entre si
+    djokovic_nadal_this_year = frame[
+        ((frame['winner_name'].str.contains("Novak Djokovic")) & (frame["loser_name"].str.contains("Rafael Nadal"))) |
+        ((frame['winner_name'].str.contains("Rafael Nadal")) & (frame["loser_name"].str.contains("Novak Djokovic")))
+    ]
+    # los guardo separados
+    djokovic_nadal = pd.concat([djokovic_nadal, djokovic_nadal_this_year], ignore_index=True, sort=False)
 
     partidos_nadal_ganados = pd.concat([partidos_nadal_ganados, winner], ignore_index=True, sort=False)
     partidos_nadal_perdidos = pd.concat([partidos_nadal_perdidos, loser], ignore_index=True, sort=False)
 
+# HASTA ACA TENGO 5 DATAFRAMES:
+# PARTIDOS GANADOS Y PERDIDOS DE DJOKOVIC
+# PARTIDOS GANADOS Y PERDIDOS DE NADAL
+# PARTIDOS ENTRE DJOKOVIC Y NADAL
+
+# obtengo sample para testing
+djokovic_testing_ganados = partidos_djokovic_ganados.sample(frac=0.2, random_state=42)
+djokovic_testing_perdidos = partidos_djokovic_perdidos.sample(frac=0.2, random_state=42)
+
+nadal_testing_ganados = partidos_nadal_ganados.sample(frac=0.2, random_state=42)
+nadal_testing_perdidos = partidos_nadal_perdidos.sample(frac=0.2, random_state=42)
+
+
+# armo training quitando los de testing
+djokovic_training_ganados = partidos_djokovic_ganados.drop(djokovic_testing_ganados.index)
+djokovic_training_perdidos = partidos_djokovic_perdidos.drop(djokovic_testing_perdidos.index)
+
+nadal_training_ganados = partidos_nadal_ganados.drop(nadal_testing_ganados.index)
+nadal_training_perdidos = partidos_nadal_perdidos.drop(nadal_testing_perdidos.index)
+
+
+
+
 
 # exporto a csv
-partidos_djokovic_ganados.to_csv("./datos_training/djokovic_ganados_training.csv", index=False)
-partidos_djokovic_perdidos.to_csv("./datos_training/djokovic_perdidos_training.csv", index=False)
+djokovic_training_ganados.to_csv("./datos_training/djokovic_training_ganados.csv", index=False)
+djokovic_training_perdidos.to_csv("./datos_training/djokovic_training_perdidos.csv", index=False)
 
-partidos_nadal_ganados.to_csv("./datos_training/nadal_ganados_training.csv", index=False)
-partidos_nadal_perdidos.to_csv("./datos_training/nadal_perdidos_training.csv", index=False)
+nadal_training_ganados.to_csv("./datos_training/nadal_training_ganados.csv", index=False)
+nadal_training_perdidos.to_csv("./datos_training/nadal_training_perdidos.csv", index=False)
+
+
+djokovic_testing_ganados.to_csv("./datos_testing/djokovic_testing_ganados.csv", index=False)
+djokovic_testing_perdidos.to_csv("./datos_testing/djokovic_testing_perdidos.csv", index=False)
+
+nadal_testing_ganados.to_csv("./datos_testing/nadal_testing_ganados.csv", index=False)
+nadal_testing_perdidos.to_csv("./datos_testing/nadal_testing_perdidos.csv", index=False)
+
+djokovic_nadal.to_csv("./datos_testing/nadal_vs_djokovic.csv", index=False)
