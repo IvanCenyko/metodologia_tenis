@@ -21,13 +21,23 @@ def acum_total(df_win, df_lose, param:str):
 
 def normalizacion_positiva(valor, min, max):
     norm = (valor-min)/(max-min) * 100
-    
-    return 100 if norm >= 100 else norm
+        
+    if norm >= 100:
+        return 100
+    elif norm <= 0:
+        return 0
+    else:
+        return norm
 
 def normalizacion_negativa(valor, min, max):
     norm = (1 - (valor-min)/(max-min)) * 100
 
-    return 100 if norm >= 100 else norm
+    if norm >= 100:
+        return 100
+    elif norm <= 0:
+        return 0
+    else:
+        return norm
 
 def ponderar(valor, pond):
     return valor * pond / 100

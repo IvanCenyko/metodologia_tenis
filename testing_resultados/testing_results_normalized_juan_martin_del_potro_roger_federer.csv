@@ -1,4 +1,4 @@
-jugador,porc_victorias_normalizado,porc_victorias_tipo_de_suelo_normalizado,aces_normalizado,dobles_faltas_por_partido_normalizado,porc_primer_servicio_in_normalizado,porc_pts_ganados_primer_saque_normalizado,porc_pts_ganados_segundo_saque_normalizado,break_points_enfrentados_normalizado,porc_break_points_salvados_normalizado,puntaje
-Juan Martin del Potro,12.88,12.1,5.65,10.71,5.0,11.0,6.25,2.34,9.26,75.18
-Roger Federer,17.5,13.5,5.81,11.0,5.0,11.0,8.84,3.47,11.57,87.69
-"diferencia porcentual, a favor del 1ero positiva",-26.399999999999995,-10.370370370370372,-2.753872633390693,-2.6363636363636287,0.0,0.0,-29.29864253393665,-32.56484149855908,-19.965427830596376,
+jugador,porc_victorias_normalizado,porc_victorias_tipo_de_suelo_normalizado,aces_normalizado,dobles_faltas_por_partido_normalizado,porc_primer_servicio_in_normalizado,porc_pts_ganados_primer_saque_normalizado,porc_pts_ganados_segundo_saque_normalizado,break_points_enfrentados_normalizado,porc_break_points_salvados_normalizado
+Juan Martin del Potro,12.88,12.1,5.65,10.71,5.0,11.0,6.25,2.34,9.26
+Roger Federer,17.5,13.5,5.81,11.0,5.0,11.0,8.84,3.47,11.57
+"diferencia porcentual, a favor del 1ero positiva",-26.399999999999995,-10.370370370370372,-2.753872633390693,-2.6363636363636287,0.0,0.0,-29.29864253393665,-32.56484149855908,

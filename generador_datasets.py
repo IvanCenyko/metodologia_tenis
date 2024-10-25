@@ -124,6 +124,10 @@ for tenista1, tenista2, years in tenistas:
     df = dataframe_generator(years, dataframes_archivos, tenista1=tenista1, tenista2=tenista2)
     encuentros = encuentros_vs(years, dataframes_archivos, tenista1=tenista1, tenista2=tenista2)
 
+    # Separo los encuentros en dos dataframes
+    encuentros_tenista1_winner = encuentros[encuentros['winner_name'].str.contains(tenista1)]
+    encuentros_tenista2_winner = encuentros[encuentros['winner_name'].str.contains(tenista2)]
+
     # exporto a csv
     df["tenista1_training_ganados"].to_csv(f"./datos_training/{tenista1.lower().replace(' ', '_')}_training_ganados.csv", index=False)
     df["tenista1_training_perdidos"].to_csv(f"./datos_training/{tenista1.lower().replace(' ', '_')}_training_perdidos.csv", index=False)
@@ -137,6 +141,5 @@ for tenista1, tenista2, years in tenistas:
     df["tenista2_testing_ganados"].to_csv(f"./datos_testing/{tenista2.lower().replace(' ', '_')}_testing_ganados.csv", index=False)
     df["tenista2_testing_perdidos"].to_csv(f"./datos_testing/{tenista2.lower().replace(' ', '_')}_testing_perdidos.csv", index=False)
 
-    encuentros.to_csv(f"./datos_testing/{tenista1.lower().replace(' ', '_')}_vs_{tenista2.lower().replace(' ', '_')}.csv", index=False)
-
-
+    encuentros_tenista1_winner.to_csv(f"./datos_testing/{tenista1.lower().replace(' ', '_')}_vs_{tenista2.lower().replace(' ', '_')}_{tenista1.replace(' ', '_').lower()}_winner.csv", index=False)
+    encuentros_tenista2_winner.to_csv(f"./datos_testing/{tenista1.lower().replace(' ', '_')}_vs_{tenista2.lower().replace(' ', '_')}_{tenista2.replace(' ', '_').lower()}_winner.csv", index=False)

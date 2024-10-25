@@ -228,18 +228,18 @@ def calc_puntaje(ganados_testing, perdidos_testing):
 
 
 # lista de pares de jugadores
-player_pairs = [("juan_martin_del_potro", "roger_federer"), ("novak_djokovic", "rafael_nadal")]
+player_pairs = [("roger_federer", "juan_martin_del_potro"), ("novak_djokovic", "rafael_nadal")]
 
 testing_data = {}
 
 for player1, player2 in player_pairs:
     testing_data[player1] = {
-        "ganados": pd.read_csv(f"datos_testing/{player1}_testing_ganados.csv"),
-        "perdidos": pd.read_csv(f"datos_testing/{player1}_testing_perdidos.csv")
+        "ganados": pd.read_csv(f"datos_testing/{player1}_vs_{player2}_{player1}_winner.csv"),
+        "perdidos": pd.read_csv(f"datos_testing/{player1}_vs_{player2}_{player2}_winner.csv")
     }
     testing_data[player2] = {
-        "ganados": pd.read_csv(f"datos_testing/{player2}_testing_ganados.csv"),
-        "perdidos": pd.read_csv(f"datos_testing/{player2}_testing_perdidos.csv")
+        "ganados": pd.read_csv(f"datos_testing/{player1}_vs_{player2}_{player2}_winner.csv"),
+        "perdidos": pd.read_csv(f"datos_testing/{player1}_vs_{player2}_{player1}_winner.csv")
     }
 
 # Diccionario para almacenar los resultados de entrenamiento
@@ -263,7 +263,6 @@ for player1, player2 in player_pairs:
     df_testing_normalized.loc[len(df_testing_normalized)] = testing_results[player1][1].values()
     df_testing_normalized.loc[len(df_testing_normalized)] = testing_results[player2][1].values()
 
-
     # Redondear todos los valores numéricos a dos cifras decimales
     df_testing = df_testing.round(2)
     df_testing_normalized = df_testing_normalized.round(2)
@@ -275,8 +274,8 @@ for player1, player2 in player_pairs:
     print(df_testing_normalized)
 
     # Guardar en CSV si es necesario
-    df_testing.to_csv(f"./testing_resultados/testing_results_{player1}_{player2}.csv", index=False)
-    df_testing_normalized.to_csv(f"./testing_resultados/testing_results_normalized_{player1}_{player2}.csv", index=False)
+    df_testing.to_csv(f"./enfrentamientos_resultados/testing_results_{player1}_{player2}.csv", index=False)
+    df_testing_normalized.to_csv(f"./enfrentamientos_resultados/testing_results_normalized_{player1}_{player2}.csv", index=False)
 
     # Imprimir los puntajes
     print(f"Puntajes para {player1} y {player2}:")
@@ -293,10 +292,10 @@ for player1, player2 in player_pairs:
     df_testing_normalized.loc[len(df_testing_normalized)] = ["diferencia porcentual, a favor del 1ero positiva"] + list(diff) + [None]
 
     # Guardar el DataFrame actualizado en CSV si es necesario
-    df_testing_normalized.to_csv(f"./testing_resultados/testing_results_normalized_{player1}_{player2}.csv", index=False)
+    df_testing_normalized.to_csv(f"./enfrentamientos_resultados/testing_results_normalized_{player1}_{player2}.csv", index=False)
 
-    testing_results[player1][3].to_csv(f"./testing_resultados/varianza_desviacion_{player1}.csv", index=False)
-    testing_results[player2][3].to_csv(f"./testing_resultados/varianza_desviacion_{player2}.csv", index=False)
+    testing_results[player1][3].to_csv(f"./enfrentamientos_resultados/varianza_desviacion_{player1}.csv", index=False)
+    testing_results[player2][3].to_csv(f"./enfrentamientos_resultados/varianza_desviacion_{player2}.csv", index=False)
 
     
 
