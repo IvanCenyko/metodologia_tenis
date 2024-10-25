@@ -33,12 +33,12 @@ def ponderar(valor, pond):
     return valor * pond / 100
 
 
-def calc_puntaje(ganados_training, perdidos_training):
+def calc_puntaje(ganados_testing, perdidos_testing):
     ########## PORCENTAJE DE VICTORIAS ##########
 
-    # Victorias, derrotas y partidos totales de Nadal en training
-    victorias_totales = len(ganados_training)
-    derrotas_totales = len(perdidos_training)
+    # Victorias, derrotas y partidos totales de Nadal en testing
+    victorias_totales = len(ganados_testing)
+    derrotas_totales = len(perdidos_testing)
     partidos_totales = derrotas_totales + victorias_totales
 
     ## VALOR A NORMALIZAR:
@@ -50,25 +50,25 @@ def calc_puntaje(ganados_training, perdidos_training):
 
     ## VALOR A NORMALIZAR:
     # Promedio Aces por partido
-    aces_por_partido = promedio(ganados_training, perdidos_training, partidos_totales, "ace")
+    aces_por_partido = promedio(ganados_testing, perdidos_testing, partidos_totales, "ace")
 
 
     ########## PROMEDIO DOBLE FALTAS POR PARTIDO ##########
 
     ## VALOR A NORMALIZAR:
     # Promedio dobles faltas por partido
-    dobles_faltas_por_partido =  promedio(ganados_training, perdidos_training, partidos_totales, "df")
+    dobles_faltas_por_partido =  promedio(ganados_testing, perdidos_testing, partidos_totales, "df")
 
 
     ########## PORCENTAJE DE 1ER SERVICIO ADENTRO, DE TODOS LOS SERVICIOS JUGADOS ##########
 
     # todos los servicios de Nadal sin contar doble falta
-    total_servicios_sin_df = perdidos_training["l_svpt"].sum() - perdidos_training["l_df"].sum() + ganados_training["w_svpt"].sum() - ganados_training["w_df"].sum()# Porcentaje de primeros servicios adentro
+    total_servicios_sin_df = perdidos_testing["l_svpt"].sum() - perdidos_testing["l_df"].sum() + ganados_testing["w_svpt"].sum() - ganados_testing["w_df"].sum()# Porcentaje de primeros servicios adentro
     # todos los servicios de Nadal contando doble falta
-    total_servicios_con_df = perdidos_training["l_svpt"].sum() + ganados_training["w_svpt"].sum()
+    total_servicios_con_df = perdidos_testing["l_svpt"].sum() + ganados_testing["w_svpt"].sum()
 
     # Total de primeros servicios adentro
-    total_primer_servicio_in = acum_total(ganados_training, perdidos_training, "1stIn")
+    total_primer_servicio_in = acum_total(ganados_testing, perdidos_testing, "1stIn")
 
     ## VALOR A NORMALIZAR:
     # porcentaje de primer servicio adentro de todos los servicios jugados
@@ -77,9 +77,9 @@ def calc_puntaje(ganados_training, perdidos_training):
     ########## PORCENTAJE DE PTS GANADOS CON 1ER Y 2DO SAQUE RESPECTO A LOS JUGADOS DE ESE TIPO ##########
 
     # Total de pts ganados por nadal de primer saque
-    pts_ganados_primer_saque = acum_total(ganados_training, perdidos_training, "1stWon")
+    pts_ganados_primer_saque = acum_total(ganados_testing, perdidos_testing, "1stWon")
     # idem pero 2do saque
-    pts_ganados_segundo_saque = acum_total(ganados_training, perdidos_training, "2ndWon")
+    pts_ganados_segundo_saque = acum_total(ganados_testing, perdidos_testing, "2ndWon")
 
     ## VALORES A NORMALIZAR:
     # porcentaje de pts ganados de primer saque, de todos los bien convertidos
@@ -91,12 +91,12 @@ def calc_puntaje(ganados_training, perdidos_training):
 
     ## VALOR A NORMALIZAR:
     # promedio de break points 
-    prom_break_por_partido = promedio(ganados_training, perdidos_training, partidos_totales, "bpFaced")
+    prom_break_por_partido = promedio(ganados_testing, perdidos_testing, partidos_totales, "bpFaced")
 
     ########## PORCENTAJE DE BREAK POINTS SALVADOS RESPECTO A LOS JUGADOS ##########
 
-    break_jugados = acum_total(ganados_training, perdidos_training, "bpFaced")
-    break_salvados = acum_total(ganados_training, perdidos_training, "bpSaved")
+    break_jugados = acum_total(ganados_testing, perdidos_testing, "bpFaced")
+    break_salvados = acum_total(ganados_testing, perdidos_testing, "bpSaved")
 
     ## VALOR A NORMALIZAR:
     porc_break_salvados = break_salvados / break_jugados * 100
@@ -104,14 +104,14 @@ def calc_puntaje(ganados_training, perdidos_training):
     ########## PORC VICTORIAS SEGUN SUELO RESPECTO A PARTIDOS JUGADOS EN ESE SUELO ##########
 
     # Total de partidos ganados en cada superficie
-    partidos_ganados_clay = len(ganados_training[ganados_training["surface"].str.contains("Clay")])
-    partidos_ganados_grass = len(ganados_training[ganados_training["surface"].str.contains("Grass")])
-    partidos_ganados_hard = len(ganados_training[ganados_training["surface"].str.contains("Hard")])
+    partidos_ganados_clay = len(ganados_testing[ganados_testing["surface"].str.contains("Clay")])
+    partidos_ganados_grass = len(ganados_testing[ganados_testing["surface"].str.contains("Grass")])
+    partidos_ganados_hard = len(ganados_testing[ganados_testing["surface"].str.contains("Hard")])
 
     # total de partidos jugados en cada superficie
-    partidos_totales_clay = partidos_ganados_clay + len(perdidos_training[perdidos_training["surface"].str.contains("Clay")])
-    partidos_totales_grass = partidos_ganados_grass + len(perdidos_training[perdidos_training["surface"].str.contains("Grass")])
-    partidos_totales_hard = partidos_ganados_hard + len(perdidos_training[perdidos_training["surface"].str.contains("Hard")])
+    partidos_totales_clay = partidos_ganados_clay + len(perdidos_testing[perdidos_testing["surface"].str.contains("Clay")])
+    partidos_totales_grass = partidos_ganados_grass + len(perdidos_testing[perdidos_testing["surface"].str.contains("Grass")])
+    partidos_totales_hard = partidos_ganados_hard + len(perdidos_testing[perdidos_testing["surface"].str.contains("Hard")])
 
     ## VALORES A NORMALIZAR:
     # porcentaje de victorias en cada superficie
@@ -161,16 +161,16 @@ def calc_puntaje(ganados_training, perdidos_training):
     # break points salvados
     porc_break_points_salvados_normalizado = ponderar(normalizacion_positiva(porc_break_salvados, 40, 70), POND_PORC_BREAK_POINTS_SALVADOS)
 
-    aces_lista = pd.concat([perdidos_training["l_ace"], ganados_training["w_ace"]])
-    dobles_faltas_lista = pd.concat([perdidos_training["l_df"], ganados_training["w_df"]])
-    primer_servicio_in_lista = pd.concat([perdidos_training["l_1stIn"], ganados_training["w_1stIn"]])
-    porc_pts_ganados_primer_saque_lista = pd.concat([perdidos_training["l_1stWon"], ganados_training["w_1stWon"]])
-    prom_break_por_partido_lista = pd.concat([perdidos_training["l_bpFaced"], ganados_training["w_bpFaced"]])
-    prom_break_salvados_lista = pd.concat([perdidos_training["l_bpSaved"], ganados_training["w_bpSaved"]])
+    aces_lista = pd.concat([perdidos_testing["l_ace"], ganados_testing["w_ace"]])
+    dobles_faltas_lista = pd.concat([perdidos_testing["l_df"], ganados_testing["w_df"]])
+    primer_servicio_in_lista = pd.concat([perdidos_testing["l_1stIn"], ganados_testing["w_1stIn"]])
+    porc_pts_ganados_primer_saque_lista = pd.concat([perdidos_testing["l_1stWon"], ganados_testing["w_1stWon"]])
+    prom_break_por_partido_lista = pd.concat([perdidos_testing["l_bpFaced"], ganados_testing["w_bpFaced"]])
+    prom_break_salvados_lista = pd.concat([perdidos_testing["l_bpSaved"], ganados_testing["w_bpSaved"]])
 
     # Calcular varianza y desviación estándar
     varianza_desviacion = {
-        "jugador": ganados_training.loc[0, "winner_name"],
+        "jugador": ganados_testing.loc[0, "winner_name"],
         "aces_varianza": aces_lista.var(),
         "aces_desviacion": aces_lista.std(),
         "dobles_faltas_varianza": dobles_faltas_lista.var(),
@@ -191,10 +191,10 @@ def calc_puntaje(ganados_training, perdidos_training):
     
     valores_normaliz = [value for name, value in locals().items() if "normalizado" in name]
 
-    dict_normalizado = {"jugador": ganados_training.loc[0, "winner_name"]} | {name: value for name, value in locals().items() if "normalizado" in name}
+    dict_normalizado = {"jugador": ganados_testing.loc[0, "winner_name"]} | {name: value for name, value in locals().items() if "normalizado" in name}
 
     valores_sin_normalizar = {
-    "jugador": ganados_training.loc[0, "winner_name"],
+    "jugador": ganados_testing.loc[0, "winner_name"],
     "porc_victorias": porc_victorias,
     "porc_victorias_clay": porc_victorias_clay,
     "porc_victorias_grass": porc_victorias_grass,
@@ -220,75 +220,75 @@ def calc_puntaje(ganados_training, perdidos_training):
 # lista de pares de jugadores
 player_pairs = [("juan_martin_del_potro", "roger_federer"), ("novak_djokovic", "rafael_nadal")]
 
-training_data = {}
+testing_data = {}
 
 for player1, player2 in player_pairs:
-    training_data[player1] = {
-        "ganados": pd.read_csv(f"datos_training/{player1}_training_ganados.csv"),
-        "perdidos": pd.read_csv(f"datos_training/{player1}_training_perdidos.csv")
+    testing_data[player1] = {
+        "ganados": pd.read_csv(f"datos_testing/{player1}_testing_ganados.csv"),
+        "perdidos": pd.read_csv(f"datos_testing/{player1}_testing_perdidos.csv")
     }
-    training_data[player2] = {
-        "ganados": pd.read_csv(f"datos_training/{player2}_training_ganados.csv"),
-        "perdidos": pd.read_csv(f"datos_training/{player2}_training_perdidos.csv")
+    testing_data[player2] = {
+        "ganados": pd.read_csv(f"datos_testing/{player2}_testing_ganados.csv"),
+        "perdidos": pd.read_csv(f"datos_testing/{player2}_testing_perdidos.csv")
     }
 
 # Diccionario para almacenar los resultados de entrenamiento
-training_results = {}
+testing_results = {}
 
 # Calcular el puntaje para cada jugador y almacenar los resultados
 for player1, player2 in player_pairs:
-    training_results[player1] = calc_puntaje(training_data[player1]["ganados"], training_data[player1]["perdidos"])
-    training_results[player2] = calc_puntaje(training_data[player2]["ganados"], training_data[player2]["perdidos"])
+    testing_results[player1] = calc_puntaje(testing_data[player1]["ganados"], testing_data[player1]["perdidos"])
+    testing_results[player2] = calc_puntaje(testing_data[player2]["ganados"], testing_data[player2]["perdidos"])
 
     # Obtener las columnas de los resultados sin normalizar
-    columnas = training_results[player1][2].keys()
+    columnas = testing_results[player1][2].keys()
 
     # Crear un DataFrame para los resultados sin normalizar
-    df_training = pd.DataFrame(columns=columnas)
-    df_training.loc[len(df_training)] = training_results[player1][2].values()
-    df_training.loc[len(df_training)] = training_results[player2][2].values()
+    df_testing = pd.DataFrame(columns=columnas)
+    df_testing.loc[len(df_testing)] = testing_results[player1][2].values()
+    df_testing.loc[len(df_testing)] = testing_results[player2][2].values()
 
     # Crear un DataFrame para los resultados normalizados
-    df_training_normalized = pd.DataFrame(columns=training_results[player1][1].keys())
-    df_training_normalized.loc[len(df_training_normalized)] = training_results[player1][1].values()
-    df_training_normalized.loc[len(df_training_normalized)] = training_results[player2][1].values()
+    df_testing_normalized = pd.DataFrame(columns=testing_results[player1][1].keys())
+    df_testing_normalized.loc[len(df_testing_normalized)] = testing_results[player1][1].values()
+    df_testing_normalized.loc[len(df_testing_normalized)] = testing_results[player2][1].values()
 
     # Agregar una columna con los puntajes
-    df_training_normalized["puntaje"] = [training_results[player1][0], training_results[player2][0]]
+    df_testing_normalized["puntaje"] = [testing_results[player1][0], testing_results[player2][0]]
 
     # Redondear todos los valores numéricos a dos cifras decimales
-    df_training = df_training.round(2)
-    df_training_normalized = df_training_normalized.round(2)
+    df_testing = df_testing.round(2)
+    df_testing_normalized = df_testing_normalized.round(2)
 
     # Imprimir los datos de entrenamiento
     print(f"Datos de entrenamiento para {player1} y {player2}:")
-    print(df_training)
+    print(df_testing)
     print(f"Datos de entrenamiento normalizados para {player1} y {player2}:")
-    print(df_training_normalized)
+    print(df_testing_normalized)
 
     # Guardar en CSV si es necesario
-    df_training.to_csv(f"./training_resultados/training_results_{player1}_{player2}.csv", index=False)
-    df_training_normalized.to_csv(f"./training_resultados/training_results_normalized_{player1}_{player2}.csv", index=False)
+    df_testing.to_csv(f"./testing_resultados/testing_results_{player1}_{player2}.csv", index=False)
+    df_testing_normalized.to_csv(f"./testing_resultados/testing_results_normalized_{player1}_{player2}.csv", index=False)
 
     # Imprimir los puntajes
     print(f"Puntajes para {player1} y {player2}:")
-    print(training_results[player1][0])
-    print(training_results[player2][0])
+    print(testing_results[player1][0])
+    print(testing_results[player2][0])
 
     # Calcular la diferencia, multiplicar por 100 y dividir por los valores de la lista
-    diff = (df_training_normalized.iloc[0, 1:-1] - df_training_normalized.iloc[1, 1:-1]) * 100 / df_training_normalized.iloc[:, 1:-1].max()
+    diff = (df_testing_normalized.iloc[0, 1:-1] - df_testing_normalized.iloc[1, 1:-1]) * 100 / df_testing_normalized.iloc[:, 1:-1].max()
     diff = diff.round(2)  # Redondear la diferencia a dos cifras decimales
     print(f"Diferencia normalizada multiplicada por 100 y dividida por los valores superiores para {player1} y {player2}:")
     print(diff)
     
     # Añadir la diferencia como una nueva fila en el DataFrame normalizado
-    df_training_normalized.loc[len(df_training_normalized)] = ["diferencia porcentual, a favor del 1ero positiva"] + list(diff) + [None]
+    df_testing_normalized.loc[len(df_testing_normalized)] = ["diferencia porcentual, a favor del 1ero positiva"] + list(diff) + [None]
 
     # Guardar el DataFrame actualizado en CSV si es necesario
-    df_training_normalized.to_csv(f"./training_resultados/training_results_normalized_{player1}_{player2}.csv", index=False)
+    df_testing_normalized.to_csv(f"./testing_resultados/testing_results_normalized_{player1}_{player2}.csv", index=False)
 
-    training_results[player1][3].to_csv(f"./training_resultados/varianza_desviacion_{player1}.csv", index=False)
-    training_results[player2][3].to_csv(f"./training_resultados/varianza_desviacion_{player2}.csv", index=False)
+    testing_results[player1][3].to_csv(f"./testing_resultados/varianza_desviacion_{player1}.csv", index=False)
+    testing_results[player2][3].to_csv(f"./testing_resultados/varianza_desviacion_{player2}.csv", index=False)
 
     
 
