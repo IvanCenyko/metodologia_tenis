@@ -195,6 +195,7 @@ df2.loc[len(df2)] = datos_djokovic[1].values()
 
 
 print(df2)
+print(datos_nadal[0], datos_djokovic[0])
 #df.to_csv("./test.csv")
 #df2.to_csv("./test2.csv")
 
