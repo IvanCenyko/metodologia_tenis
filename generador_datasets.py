@@ -98,8 +98,6 @@ nadal_training_perdidos = partidos_nadal_perdidos.drop(nadal_testing_perdidos.in
 
 
 
-
-
 # exporto a csv
 djokovic_training_ganados.to_csv("./datos_training/djokovic_training_ganados.csv", index=False)
 djokovic_training_perdidos.to_csv("./datos_training/djokovic_training_perdidos.csv", index=False)
