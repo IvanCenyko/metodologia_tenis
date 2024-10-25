@@ -34,8 +34,6 @@ def dataframe_generator(years:range,dataframes:dict, tenista1:str, tenista2:str,
     partidos_tenista1_ganados = pd.DataFrame(columns=columnas)
     partidos_tenista1_perdidos = pd.DataFrame(columns=columnas)
 
-    tenista1_vs_tenista2 = pd.DataFrame(columns=columnas)
-
 
     # datos de tenista1
 
@@ -65,13 +63,6 @@ def dataframe_generator(years:range,dataframes:dict, tenista1:str, tenista2:str,
         winner = frame[(frame['winner_name'].str.contains(tenista2)) & ~frame["loser_name"].str.contains(tenista1)]
         loser = frame[(frame['loser_name'].str.contains(tenista2)) & ~frame["winner_name"].str.contains(tenista1)]
 
-        # busco partidos que hayan jugado entre si
-        tenista1_vs_tenista2_this_year = frame[
-            ((frame['winner_name'].str.contains(tenista1)) & (frame["loser_name"].str.contains(tenista2))) |
-            ((frame['winner_name'].str.contains(tenista2)) & (frame["loser_name"].str.contains(tenista1)))
-        ]
-        # los guardo separados
-        tenista1_vs_tenista2 = pd.concat([tenista1_vs_tenista2, tenista1_vs_tenista2_this_year], ignore_index=True, sort=False)
 
         partidos_tenista2_ganados = pd.concat([partidos_tenista2_ganados, winner], ignore_index=True, sort=False)
         partidos_tenista2_perdidos = pd.concat([partidos_tenista2_perdidos, loser], ignore_index=True, sort=False)
@@ -99,25 +90,53 @@ def dataframe_generator(years:range,dataframes:dict, tenista1:str, tenista2:str,
     return {"tenista1_training_ganados": tenista1_training_ganados, "tenista1_training_perdidos": tenista1_training_perdidos,
             "tenista2_training_ganados": tenista2_training_ganados, "tenista2_training_perdidos": tenista2_training_perdidos, 
             "tenista1_testing_ganados": tenista1_testing_ganados, "tenista1_testing_perdidos": tenista1_testing_perdidos,
-            "tenista2_testing_ganados": tenista2_testing_ganados, "tenista2_testing_perdidos": tenista2_testing_perdidos,
-            "tenista1_vs_tenista2": tenista1_vs_tenista2}
+            "tenista2_testing_ganados": tenista2_testing_ganados, "tenista2_testing_perdidos": tenista2_testing_perdidos}
+
+def encuentros_vs(years:range, dataframes, tenista1, tenista2):
 
 
-df = dataframe_generator(range(2004, 2025), dataframes_archivos, tenista1='Novak Djokovic', tenista2='Rafael Nadal')
+    # tomo columnas de algun dataframe (todos son iguales en formato)
+    columnas = list(dataframes[f"atp_matches_{years[-2]}"])
+    tenista1_vs_tenista2 = pd.DataFrame(columns=columnas)
 
 
-# exporto a csv
-df["tenista1_training_ganados"].to_csv("./datos_training/djokovic_training_ganados.csv", index=False)
-df["tenista1_training_perdidos"].to_csv("./datos_training/djokovic_training_perdidos.csv", index=False)
+    for year in years:
+        # tomo el dataframe de ese agno
+        frame = dataframes[f"atp_matches_{str(year)}"]
 
-df["tenista2_training_ganados"].to_csv("./datos_training/nadal_training_ganados.csv", index=False)
-df["tenista2_training_perdidos"].to_csv("./datos_training/nadal_training_perdidos.csv", index=False)
+        # busco partidos que hayan jugado entre si
+        tenista1_vs_tenista2_this_year = frame[
+            ((frame['winner_name'].str.contains(tenista1)) & (frame["loser_name"].str.contains(tenista2))) |
+            ((frame['winner_name'].str.contains(tenista2)) & (frame["loser_name"].str.contains(tenista1)))
+        ]
+        # los guardo separados
+        tenista1_vs_tenista2 = pd.concat([tenista1_vs_tenista2, tenista1_vs_tenista2_this_year], ignore_index=True, sort=False)
 
-df["tenista1_testing_ganados"].to_csv("./datos_testing/djokovic_testing_ganados.csv", index=False)
-df["tenista1_testing_perdidos"].to_csv("./datos_testing/djokovic_testing_perdidos.csv", index=False)
+    return tenista1_vs_tenista2
 
-df["tenista2_testing_ganados"].to_csv("./datos_testing/nadal_testing_ganados.csv", index=False)
-df["tenista2_testing_perdidos"].to_csv("./datos_testing/nadal_testing_perdidos.csv", index=False)
 
-df["tenista1_vs_tenista2"].to_csv("./datos_testing/djokovic_vs_nadal.csv", index=False)
+tenistas = [
+    ('Novak Djokovic', 'Rafael Nadal', range(2004, 2025)),
+    ('Roger Federer', 'Juan Martin del Potro', range(2006, 2020)),
+]
+
+for tenista1, tenista2, years in tenistas:
+    df = dataframe_generator(years, dataframes_archivos, tenista1=tenista1, tenista2=tenista2)
+    encuentros = encuentros_vs(years, dataframes_archivos, tenista1=tenista1, tenista2=tenista2)
+
+    # exporto a csv
+    df["tenista1_training_ganados"].to_csv(f"./datos_training/{tenista1.lower().replace(' ', '_')}_training_ganados.csv", index=False)
+    df["tenista1_training_perdidos"].to_csv(f"./datos_training/{tenista1.lower().replace(' ', '_')}_training_perdidos.csv", index=False)
+
+    df["tenista2_training_ganados"].to_csv(f"./datos_training/{tenista2.lower().replace(' ', '_')}_training_ganados.csv", index=False)
+    df["tenista2_training_perdidos"].to_csv(f"./datos_training/{tenista2.lower().replace(' ', '_')}_training_perdidos.csv", index=False)
+
+    df["tenista1_testing_ganados"].to_csv(f"./datos_testing/{tenista1.lower().replace(' ', '_')}_testing_ganados.csv", index=False)
+    df["tenista1_testing_perdidos"].to_csv(f"./datos_testing/{tenista1.lower().replace(' ', '_')}_testing_perdidos.csv", index=False)
+
+    df["tenista2_testing_ganados"].to_csv(f"./datos_testing/{tenista2.lower().replace(' ', '_')}_testing_ganados.csv", index=False)
+    df["tenista2_testing_perdidos"].to_csv(f"./datos_testing/{tenista2.lower().replace(' ', '_')}_testing_perdidos.csv", index=False)
+
+    encuentros.to_csv(f"./datos_testing/{tenista1.lower().replace(' ', '_')}_vs_{tenista2.lower().replace(' ', '_')}.csv", index=False)
+
 

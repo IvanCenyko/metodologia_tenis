@@ -1,5 +1,17 @@
 import pandas as pd
 import numpy as np
+import math
+# Definición de constantes de ponderación
+POND_PORC_VICTORIAS = 17.5
+POND_PORC_VICTORIAS_TIPO_SUELO = 17.5
+POND_ACES = 9
+POND_DOBLES_FALTAS = 11
+POND_PORC_PRIMER_SERVICIO_IN = 5
+POND_PORC_PTS_GANADOS_PRIMER_SAQUE = 11
+POND_PORC_PTS_GANADOS_SEGUNDO_SAQUE = 11
+POND_BREAK_POINTS_ENFRENTADOS = 6
+POND_PORC_BREAK_POINTS_SALVADOS = 12
+
 
 def promedio(df_win, df_lose, total, col:str):
     return (df_win["w_" + col].sum() + df_lose["l_" + col].sum()) / total
@@ -107,43 +119,76 @@ def calc_puntaje(ganados_training, perdidos_training):
     porc_victorias_grass = partidos_ganados_grass / partidos_totales_grass * 100
     porc_victorias_hard = partidos_ganados_hard / partidos_totales_hard * 100
 
+
     ########## NORMALIZACIONES Y PONDERACIONES ##########
 
-    # Porc de victorias no necesita normalizacion ni en gral ni en tipo de suelo
-    porc_victorias_normalizado = ponderar(normalizacion_positiva(porc_victorias,40, 70), 20)
+    # Definición de constantes de ponderación
+    global POND_PORC_VICTORIAS
+    global POND_PORC_VICTORIAS_TIPO_SUELO
+    global POND_ACES
+    global POND_DOBLES_FALTAS
+    global POND_PORC_PRIMER_SERVICIO_IN
+    global POND_PORC_PTS_GANADOS_PRIMER_SAQUE
+    global POND_PORC_PTS_GANADOS_SEGUNDO_SAQUE
+    global POND_BREAK_POINTS_ENFRENTADOS
+    global POND_PORC_BREAK_POINTS_SALVADOS
 
+    porc_victorias_normalizado = ponderar(normalizacion_positiva(porc_victorias, 40, 85), POND_PORC_VICTORIAS)
 
-    porc_victorias_tipo_de_suelo_normalizado = ponderar(ponderar(porc_victorias_clay, 60) + ponderar(porc_victorias_grass, 30) + ponderar(porc_victorias_hard, 10), 3)
+    porc_victorias_tipo_de_suelo_normalizado = ponderar(
+        ponderar(porc_victorias_clay, 60) + ponderar(porc_victorias_grass, 30) + ponderar(porc_victorias_hard, 10),
+        POND_PORC_VICTORIAS_TIPO_SUELO
+    )
 
     # Aces
-    aces_normalizado = ponderar(normalizacion_positiva(aces_por_partido, 0, 12), 15)
+    aces_normalizado = ponderar(normalizacion_positiva(aces_por_partido, 0, 12), POND_ACES)
 
     # dobles faltas
-
-    dobles_faltas_por_partido_normalizado = ponderar(normalizacion_negativa(dobles_faltas_por_partido, 2, 8), 9)
+    dobles_faltas_por_partido_normalizado = ponderar(normalizacion_negativa(dobles_faltas_por_partido, 2, 8), POND_DOBLES_FALTAS)
 
     # porc primeros servicios adentro
-
-    porc_primer_servicio_in_normalizado = ponderar(normalizacion_positiva(porc_primer_servicio_in, 45, 60), 11)
-
+    porc_primer_servicio_in_normalizado = ponderar(normalizacion_positiva(porc_primer_servicio_in, 40, 65), POND_PORC_PRIMER_SERVICIO_IN)
 
     # prom puntos ganados 1er saque
-
-    porc_pts_ganados_primer_saque_normalizado = ponderar(normalizacion_positiva(porc_pts_ganados_primer_saque, 45, 65), 15)
+    porc_pts_ganados_primer_saque_normalizado = ponderar(normalizacion_positiva(porc_pts_ganados_primer_saque, 45, 65), POND_PORC_PTS_GANADOS_PRIMER_SAQUE)
 
     # prom puntos ganados 2do saque
-
-    porc_pts_ganados_segundo_saque_normalizado = ponderar(normalizacion_positiva(porc_pts_ganados_segundo_saque, 45, 65), 7)
+    porc_pts_ganados_segundo_saque_normalizado = ponderar(normalizacion_positiva(porc_pts_ganados_segundo_saque, 45, 65), POND_PORC_PTS_GANADOS_SEGUNDO_SAQUE)
 
     # break points enfrentados
-
-    break_points_enfrentados_normalizado = ponderar(normalizacion_negativa(prom_break_por_partido, 2, 8), 10)
+    break_points_enfrentados_normalizado = ponderar(normalizacion_negativa(prom_break_por_partido, 1, 8), POND_BREAK_POINTS_ENFRENTADOS)
 
     # break points salvados
+    porc_break_points_salvados_normalizado = ponderar(normalizacion_positiva(porc_break_salvados, 40, 70), POND_PORC_BREAK_POINTS_SALVADOS)
 
-    porc_break_points_salvados_normalizado = ponderar(normalizacion_positiva(porc_break_salvados, 40, 70), 10)
+    aces_lista = pd.concat([perdidos_training["l_ace"], ganados_training["w_ace"]])
+    dobles_faltas_lista = pd.concat([perdidos_training["l_df"], ganados_training["w_df"]])
+    primer_servicio_in_lista = pd.concat([perdidos_training["l_1stIn"], ganados_training["w_1stIn"]])
+    porc_pts_ganados_primer_saque_lista = pd.concat([perdidos_training["l_1stWon"], ganados_training["w_1stWon"]])
+    prom_break_por_partido_lista = pd.concat([perdidos_training["l_bpFaced"], ganados_training["w_bpFaced"]])
+    prom_break_salvados_lista = pd.concat([perdidos_training["l_bpSaved"], ganados_training["w_bpSaved"]])
 
+    # Calcular varianza y desviación estándar
+    varianza_desviacion = {
+        "jugador": ganados_training.loc[0, "winner_name"],
+        "aces_varianza": aces_lista.var(),
+        "aces_desviacion": aces_lista.std(),
+        "dobles_faltas_varianza": dobles_faltas_lista.var(),
+        "dobles_faltas_desviacion": dobles_faltas_lista.std(),
+        "primer_servicio_in_varianza": primer_servicio_in_lista.var(),
+        "primer_servicio_in_desviacion": primer_servicio_in_lista.std(),
+        "porc_pts_ganados_primer_saque_varianza": porc_pts_ganados_primer_saque_lista.var(),
+        "porc_pts_ganados_primer_saque_desviacion": porc_pts_ganados_primer_saque_lista.std(),
+        "prom_break_por_partido_varianza": prom_break_por_partido_lista.var(),
+        "prom_break_por_partido_desviacion": prom_break_por_partido_lista.std(),
+        "prom_break_salvados_varianza": prom_break_salvados_lista.var(),
+        "prom_break_salvados_desviacion": prom_break_salvados_lista.std()
+    }
+    # Crear un DataFrame con los datos de varianza y desviación estándar
+    df_varianza_desviacion = pd.DataFrame(varianza_desviacion, index=[0])
+    df_varianza_desviacion = df_varianza_desviacion.round(2)
 
+    
     valores_normaliz = [value for name, value in locals().items() if "normalizado" in name]
 
     dict_normalizado = {"jugador": ganados_training.loc[0, "winner_name"]} | {name: value for name, value in locals().items() if "normalizado" in name}
@@ -167,35 +212,92 @@ def calc_puntaje(ganados_training, perdidos_training):
     for i in valores_normaliz:
         puntaje += i
 
-    return puntaje, dict_normalizado, valores_sin_normalizar
+    return puntaje, dict_normalizado, valores_sin_normalizar, df_varianza_desviacion
 
 
 
-nadal_ganados_training = pd.read_csv("datos_training/nadal_training_ganados.csv")
-nadal_perdidos_training = pd.read_csv("datos_training/nadal_training_perdidos.csv")
 
-djokovic_ganados_training = pd.read_csv("datos_training/djokovic_training_ganados.csv")
-djokovic_perdidos_training = pd.read_csv("datos_training/djokovic_training_perdidos.csv")
+# lista de pares de jugadores
+player_pairs = [("juan_martin_del_potro", "roger_federer"), ("novak_djokovic", "rafael_nadal")]
+
+training_data = {}
+
+for player1, player2 in player_pairs:
+    training_data[player1] = {
+        "ganados": pd.read_csv(f"datos_training/{player1}_training_ganados.csv"),
+        "perdidos": pd.read_csv(f"datos_training/{player1}_training_perdidos.csv")
+    }
+    training_data[player2] = {
+        "ganados": pd.read_csv(f"datos_training/{player2}_training_ganados.csv"),
+        "perdidos": pd.read_csv(f"datos_training/{player2}_training_perdidos.csv")
+    }
+
+# Diccionario para almacenar los resultados de entrenamiento
+training_results = {}
+
+# Calcular el puntaje para cada jugador y almacenar los resultados
+for player1, player2 in player_pairs:
+    training_results[player1] = calc_puntaje(training_data[player1]["ganados"], training_data[player1]["perdidos"])
+    training_results[player2] = calc_puntaje(training_data[player2]["ganados"], training_data[player2]["perdidos"])
+
+    # Obtener las columnas de los resultados sin normalizar
+    columnas = training_results[player1][2].keys()
+
+    # Crear un DataFrame para los resultados sin normalizar
+    df_training = pd.DataFrame(columns=columnas)
+    df_training.loc[len(df_training)] = training_results[player1][2].values()
+    df_training.loc[len(df_training)] = training_results[player2][2].values()
+
+    # Crear un DataFrame para los resultados normalizados
+    df_training_normalized = pd.DataFrame(columns=training_results[player1][1].keys())
+    df_training_normalized.loc[len(df_training_normalized)] = training_results[player1][1].values()
+    df_training_normalized.loc[len(df_training_normalized)] = training_results[player2][1].values()
+
+    # Agregar una columna con los puntajes
+    df_training_normalized["puntaje"] = [training_results[player1][0], training_results[player2][0]]
+
+    # Redondear todos los valores numéricos a dos cifras decimales
+    df_training = df_training.round(2)
+    df_training_normalized = df_training_normalized.round(2)
+
+    # Imprimir los datos de entrenamiento
+    print(f"Datos de entrenamiento para {player1} y {player2}:")
+    print(df_training)
+    print(f"Datos de entrenamiento normalizados para {player1} y {player2}:")
+    print(df_training_normalized)
+
+    # Guardar en CSV si es necesario
+    df_training.to_csv(f"./training_results_{player1}_{player2}.csv", index=False)
+    df_training_normalized.to_csv(f"./training_results_normalized_{player1}_{player2}.csv", index=False)
+
+    # Imprimir los puntajes
+    print(f"Puntajes para {player1} y {player2}:")
+    print(training_results[player1][0])
+    print(training_results[player2][0])
+
+    # Calcular la diferencia, multiplicar por 100 y dividir por los valores de la lista
+    diff = (df_training_normalized.iloc[0, 1:-1] - df_training_normalized.iloc[1, 1:-1]) * 100 / df_training_normalized.iloc[:, 1:-1].max()
+    diff = diff.round(2)  # Redondear la diferencia a dos cifras decimales
+    print(f"Diferencia normalizada multiplicada por 100 y dividida por los valores superiores para {player1} y {player2}:")
+    print(diff)
+    
+    # Añadir la diferencia como una nueva fila en el DataFrame normalizado
+    df_training_normalized.loc[len(df_training_normalized)] = ["diferencia porcentual, a favor del 1ero positiva"] + list(diff) + [None]
+
+    # Guardar el DataFrame actualizado en CSV si es necesario
+    df_training_normalized.to_csv(f"./training_results_normalized_{player1}_{player2}.csv", index=False)
+
+    training_results[player1][3].to_csv(f"./varianza_desviacion_{player1}.csv", index=False)
+    training_results[player2][3].to_csv(f"./varianza_desviacion_{player2}.csv", index=False)
+
+    
 
 
 
-datos_nadal = calc_puntaje(nadal_ganados_training, nadal_perdidos_training)
-datos_djokovic = calc_puntaje(djokovic_ganados_training, djokovic_perdidos_training)
 
 
-columnas = datos_nadal[2].keys()
-
-df = pd.DataFrame(columns=columnas)
-df.loc[len(df)] = datos_nadal[2].values()
-df.loc[len(df)] = datos_djokovic[2].values()
-
-df2 = pd.DataFrame(columns=datos_nadal[1].keys())
-df2.loc[len(df2)] = datos_nadal[1].values()
-df2.loc[len(df2)] = datos_djokovic[1].values()
 
 
-print(df2)
-print(datos_nadal[0], datos_djokovic[0])
-#df.to_csv("./test.csv")
-#df2.to_csv("./test2.csv")
+
+
 
