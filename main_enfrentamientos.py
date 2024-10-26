@@ -143,7 +143,7 @@ def calc_puntaje(ganados_testing, perdidos_testing):
     global POND_BREAK_POINTS_ENFRENTADOS
     global POND_PORC_BREAK_POINTS_SALVADOS
 
-    porc_victorias_normalizado = ponderar(normalizacion_positiva(porc_victorias, 40, 85), POND_PORC_VICTORIAS)
+    porc_victorias_normalizado = ponderar(normalizacion_positiva(porc_victorias, 0, 100), POND_PORC_VICTORIAS)
 
     porc_victorias_tipo_de_suelo_normalizado = ponderar(
         ponderar(porc_victorias_clay, 60) + ponderar(porc_victorias_grass, 30) + ponderar(porc_victorias_hard, 10),
@@ -166,10 +166,10 @@ def calc_puntaje(ganados_testing, perdidos_testing):
     porc_pts_ganados_segundo_saque_normalizado = ponderar(normalizacion_positiva(porc_pts_ganados_segundo_saque, 45, 65), POND_PORC_PTS_GANADOS_SEGUNDO_SAQUE)
 
     # break points enfrentados
-    break_points_enfrentados_normalizado = ponderar(normalizacion_negativa(prom_break_por_partido, 1, 8), POND_BREAK_POINTS_ENFRENTADOS)
+    break_points_enfrentados_normalizado = ponderar(normalizacion_negativa(prom_break_por_partido, 0, 8), POND_BREAK_POINTS_ENFRENTADOS)
 
     # break points salvados
-    porc_break_points_salvados_normalizado = ponderar(normalizacion_positiva(porc_break_salvados, 40, 70), POND_PORC_BREAK_POINTS_SALVADOS)
+    porc_break_points_salvados_normalizado = ponderar(normalizacion_positiva(porc_break_salvados, 0, 100), POND_PORC_BREAK_POINTS_SALVADOS)
 
     aces_lista = pd.concat([perdidos_testing["l_ace"], ganados_testing["w_ace"]])
     dobles_faltas_lista = pd.concat([perdidos_testing["l_df"], ganados_testing["w_df"]])
