@@ -1,4 +1,4 @@
-# este archivo se corre una única vez para generar los archivos .csv en "datos_training/"
+# este archivo se corre una única vez para generar los archivos .csv en "datos_training/" y "datos_testing/"
 
 import pandas as pd
 import os
