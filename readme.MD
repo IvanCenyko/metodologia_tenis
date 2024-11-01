@@ -6,11 +6,11 @@ Se concluye que el algoritmo provee una base sólida para evaluar aspectos técn
 
 Algoritmo diseñado para trabajo final de la materia 94.24 - Metodología del Aprendizaje, año 2024, por los alumnos:
 
-Manuel Carrie
-Ivan Cenyko 
-Juan Ignacio Moyano 
-Tobías Lara 
-Nicolás Rubinstein 
-Ignacio Serdá 
+- Manuel Carrie
+- Ivan Cenyko 
+- Juan Ignacio Moyano 
+- Tobías Lara 
+- Nicolás Rubinstein 
+- Ignacio Serdá 
 
 
