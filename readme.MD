@@ -4,7 +4,7 @@ El objetivo de esta investigación es proporcionar a profesionales del tenis un 
 Luego, se programa y entrena un algoritmo predictivo en Python, que logra caracterizar y cuantificar el desempeño de distintos jugadores profesionales de tenis. Al evaluar comparando los resultados a la luz de estadísticas oficiales de ATP, y utilizando la fórmula que fue desarrollada para medir la efectividad del algoritmo, resulta que tiene una eficacia del 89,9%.
 Se concluye que el algoritmo provee una base sólida para evaluar aspectos técnicos y consistencia de los jugadores a lo largo de diferentes partidos. Sin embargo, se podría pulir su exactitud en enfrentamientos integrando al entrenamiento del algoritmo factores cualitativos y contextuales. 
 
-Algoritmo diseñado para trabajo final de la materia 94.24 - Metodología del Aprendizaje, año 2024, por los alumnos:
+Algoritmo diseñado para trabajo final de la materia 94.24 - Metodología del Aprendizaje del ITBA, año 2024, por los alumnos:
 
 - Manuel Carrie
 - Ivan Cenyko 
